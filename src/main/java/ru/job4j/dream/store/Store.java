@@ -14,7 +14,7 @@ public class Store {
 
     private final Map<Integer, Post> posts = new ConcurrentHashMap<>();
 
-    private Map<Integer, Candidate> candidates = new ConcurrentHashMap<>();
+    private final Map<Integer, Candidate> candidates = new ConcurrentHashMap<>();
 
     private static AtomicInteger POST_ID = new AtomicInteger(4);
 
