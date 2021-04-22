@@ -1,6 +1,8 @@
 package ru.job4j.dream.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Post;
 
@@ -16,6 +18,7 @@ import java.util.Properties;
 
 public class PsqlStore implements Store {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PsqlStore.class.getName());
     private final BasicDataSource pool = new BasicDataSource();
 
     private PsqlStore() {
@@ -25,12 +28,12 @@ public class PsqlStore implements Store {
         )) {
             cfg.load(io);
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            LOG.error("Exception when loading db properties", e);
         }
         try {
             Class.forName(cfg.getProperty("jdbc.driver"));
         } catch (Exception e) {
-            throw new IllegalStateException(e);
+            LOG.error("Exception when registering JDBC drive", e);
         }
         pool.setDriverClassName(cfg.getProperty("jdbc.driver"));
         pool.setUrl(cfg.getProperty("jdbc.url"));
@@ -61,7 +64,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception when extracting all items from posts table", e);
         }
         return posts;
     }
@@ -78,21 +81,21 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception when extracting all items from candidates table", e);
         }
         return candidates;
     }
 
     @Override
-    public void save(Post post) {
+    public void savePost(Post post) {
         if (post.getId() == 0) {
-            create(post);
+            createPost(post);
         } else {
-            update(post);
+            updatePost(post);
         }
     }
 
-    private Post create(Post post) {
+    private Post createPost(Post post) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement("INSERT INTO post(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
@@ -104,12 +107,12 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception when creating new post", e);
         }
         return post;
     }
 
-    private void update(Post post) {
+    private void updatePost(Post post) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement("update post set name = ? where id = ?")
         ) {
@@ -117,25 +120,81 @@ public class PsqlStore implements Store {
             ps.setInt(2, post.getId());
             ps.executeUpdate();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception when updating post", e);
         }
     }
 
     @Override
-    public Post findById(int id) {
+    public Post findPostById(int id) {
         Post foundPost = null;
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement("SELECT * FROM post where id = ?")
         ) {
             ps.setInt(1, id);
             try (ResultSet it = ps.executeQuery()) {
-                while (it.next()) {
+                if (it.next()) {
                     foundPost = new Post(it.getInt("id"), it.getString("name"));
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception when searching post by id", e);
         }
         return foundPost;
+    }
+
+    @Override
+    public void saveCandidate(Candidate candidate) {
+        if (candidate.getId() == 0) {
+            createCandidate(candidate);
+        } else {
+            updateCandidate(candidate);
+        }
+    }
+
+    private Candidate createCandidate(Candidate candidate) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("INSERT INTO candidate(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+        ) {
+            ps.setString(1, candidate.getName());
+            ps.execute();
+            try (ResultSet id = ps.getGeneratedKeys()) {
+                if (id.next()) {
+                    candidate.setId(id.getInt(1));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Exception when creating new candidate", e);
+        }
+        return candidate;
+    }
+
+    private void updateCandidate(Candidate candidate) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("update candidate set name = ? where id = ?")
+        ) {
+            ps.setString(1, candidate.getName());
+            ps.setInt(2, candidate.getId());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Exception when updating candidate", e);
+        }
+    }
+
+    @Override
+    public Candidate findCandidateById(int id) {
+        Candidate foundCandidate = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM candidate where id = ?")
+        ) {
+            ps.setInt(1, id);
+            try (ResultSet it = ps.executeQuery()) {
+                if (it.next()) {
+                    foundCandidate = new Candidate(it.getInt("id"), it.getString("name"));
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Exception when searching candidate by id", e);
+        }
+        return foundCandidate;
     }
 }
