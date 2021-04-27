@@ -2,6 +2,9 @@
 <%@ page import="ru.job4j.dream.store.Store" %>
 <%@ page import="ru.job4j.dream.model.Candidate" %>
 <%@ page import="java.util.Collection" %>
+<%@ page import="ru.job4j.dream.store.PsqlStore" %>
+<%@ page import="java.io.File" %>
+<%@ page import="java.util.HashMap" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!doctype html>
 <html lang="en">
@@ -24,6 +27,12 @@
     <title>Работа мечты</title>
 </head>
 <body>
+<%
+    HashMap<String, String> images = new HashMap<>();
+    for (File name : new File("C:\\images\\").listFiles()) {
+        images.put(name.getName().substring(0, name.getName().indexOf('.')),name.getName());
+    }
+%>
 <div class="container pt-3">
 
     <div class="row">
@@ -39,16 +48,36 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${candidates}" var="candidate">
+                    <% for(Candidate candidate: PsqlStore.instOf().findAllCandidates()) { %>
                         <tr>
                             <td>
-                                <a href='<c:url value="/candidate/edit.jsp?id=${candidate.id}"/>'>
+                                <a href="<%=request.getContextPath()%>/candidate/edit.jsp?id=<%=candidate.getId()%>">
                                     <i class="fa fa-edit mr-3"></i>
                                 </a>
-                                <c:out value="${candidate.name}"/>
+                                <%=candidate.getName()%>
+                            </td>
+                            <td>
+                                <%
+                                    if (!images.containsKey(String.valueOf(candidate.getId()))){
+                                %>
+                                <div class="card-body">
+                                    <form action="<%=request.getContextPath()%>/upload.jsp?id=<%=candidate.getId()%>" method="post">
+                                        <button type="submit" class="btn btn-primary">Добавить фото</button>
+                                    </form>
+                                </div>
+                                <% } else { %>
+                                        <img src="<%=request.getContextPath()%>/download?name=<%=images.get(String.valueOf(candidate.getId()))%>" width="100px" height="100px"/>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="card-body">
+                                    <form action="<%=request.getContextPath()%>/delete?id=<%=candidate.getId()%>" method="post">
+                                        <button type="submit" class="btn btn-primary">Удалить</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-                    </c:forEach>
+                    <% } %>
                     </tbody>
                 </table>
             </div>

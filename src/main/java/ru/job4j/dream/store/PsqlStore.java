@@ -197,4 +197,16 @@ public class PsqlStore implements Store {
         }
         return foundCandidate;
     }
+
+    @Override
+    public void deleteCandidate(Candidate candidate) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("delete from candidate where id = ?")
+        ) {
+            ps.setInt(1, candidate.getId());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Exception when deleting candidate", e);
+        }
+    }
 }
