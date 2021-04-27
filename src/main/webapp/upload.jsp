@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -21,6 +22,13 @@
 <body>
 
 <div class="container">
+    <div class="row">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp"> <c:out value="${user.name}"/> | Выйти</a>
+            </li>
+        </ul>
+    </div>
     <h2>Upload image</h2>
     <form action="<%=request.getContextPath()%>/upload?id=<%=request.getParameter("id")%>" method="post" enctype="multipart/form-data">
         <div class="checkbox">
