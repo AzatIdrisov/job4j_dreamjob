@@ -12,13 +12,18 @@ import java.io.IOException;
 
 public class AuthServlet extends HttpServlet {
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("login.jsp").forward(req, resp);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
-        if ("root@local".equals(email) && "root".equals(password)) {
+        User user = PsqlStore.instOf().findUserByEmail(email);
+        if (user.getEmail().equals(email) && user.getPassword().equals(password)) {
             HttpSession sc = req.getSession();
-            User admin = PsqlStore.instOf().findUserByEmail("root@local");
-            sc.setAttribute("user", admin);
+            sc.setAttribute("user", user);
             resp.sendRedirect(req.getContextPath() + "/posts.do");
         } else {
             req.getRequestDispatcher("login.jsp").forward(req, resp);
