@@ -47,6 +47,12 @@
                 </ul>
             </div>
         </div>
+        <%String error = (String) request.getAttribute("error");
+            if (error != null) { %>
+            <div style="color:red; font-weight: bold; margin: 30px 0;">
+                <%=error%>
+            </div>
+        <% } %>
     </div>
 </div>
 </body>
