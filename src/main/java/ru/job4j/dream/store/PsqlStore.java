@@ -213,14 +213,6 @@ public class PsqlStore implements Store {
 
     @Override
     public void saveUser(User user) {
-        if (user.getId() == 0) {
-            createUser(user);
-        } else {
-            updateUser(user);
-        }
-    }
-
-    private User createUser(User user) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement("INSERT INTO \"user\"(name, email, password) values(?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
@@ -236,48 +228,11 @@ public class PsqlStore implements Store {
         } catch (Exception e) {
             LOG.error("Exception when creating new user", e);
         }
-        return user;
-    }
-
-    private void updateUser(User user) {
-        try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("update \"user\" set name=?, email=?, password=? where id=?")
-        ) {
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword());
-            ps.setInt(4, user.getId());
-            ps.executeUpdate();
-        } catch (Exception e) {
-            LOG.error("Exception when updating user", e);
-        }
-    }
-
-    @Override
-    public User findUserById(int id) {
-        User foundUser = null;
-        try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM \"user\" where id = ?")
-        ) {
-            ps.setInt(1, id);
-            try (ResultSet it = ps.executeQuery()) {
-                if (it.next()) {
-                    foundUser = new User(
-                            it.getInt("id"),
-                            it.getString("name"),
-                            it.getString("email"),
-                            it.getString("password"));
-                }
-            }
-        } catch (Exception e) {
-            LOG.error("Exception when searching candidate by id", e);
-        }
-        return foundUser;
     }
 
     @Override
     public User findUserByEmail(String email) {
-        User foundUser = null;
+        User foundUser = new User(0, "", "","");
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement("SELECT * FROM \"user\" where email = ?")
         ) {
@@ -292,7 +247,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Exception when searching candidate by id", e);
+            LOG.error("Exception when searching user by email", e);
         }
         return foundUser;
     }
