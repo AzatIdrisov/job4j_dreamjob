@@ -19,14 +19,22 @@ public class RegServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
-        PsqlStore.instOf().saveUser(
-                new User(
-                        0,
-                        req.getParameter("name"),
-                        req.getParameter("email"),
-                        req.getParameter("password")
-                )
-        );
-        resp.sendRedirect(req.getContextPath() + "/auth.do");
+        String email =  req.getParameter("email");
+        User user = PsqlStore.instOf().findUserByEmail(email);
+        if (user.getId()==0){
+            PsqlStore.instOf().saveUser(
+                    new User(
+                            0,
+                            req.getParameter("name"),
+                            req.getParameter("email"),
+                            req.getParameter("password")
+                    )
+            );
+            resp.sendRedirect(req.getContextPath() + "/auth.do");
+        } else {
+            req.setAttribute("error", "Пользователь с данным email уже существует");
+            req.getRequestDispatcher("reg.jsp").forward(req, resp);
+        }
+
     }
 }
