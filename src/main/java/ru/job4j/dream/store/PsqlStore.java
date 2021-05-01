@@ -232,7 +232,7 @@ public class PsqlStore implements Store {
 
     @Override
     public User findUserByEmail(String email) {
-        User foundUser = new User(0, "", "","");
+        User foundUser = null;
         try (Connection cn = pool.getConnection();
              PreparedStatement ps =  cn.prepareStatement("SELECT * FROM \"user\" where email = ?")
         ) {
