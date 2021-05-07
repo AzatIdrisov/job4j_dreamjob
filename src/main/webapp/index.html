@@ -34,6 +34,16 @@
             return result;
         }
     </script>
+    <script>
+        function addRow() {
+            $('#table tr:last').after(
+                  '<tr><td>'+ $('#name').val() +'</td>'
+                + '<td>'+ $('#surname').val() +'</td>'
+                + '<td>'+ $('#gender').val() +'</td>'
+                + '<td>'+ $('#desc').val() +'</td></tr>'
+            );
+        }
+    </script>
 
 </head>
 <body>
@@ -61,11 +71,11 @@
             <label for="desc">Description</label>
             <textarea id="desc" name="desc" rows="4" cols="50"></textarea>
         </div>
-        <button type="submit" class="btn btn-default" onclick="return validate();">Submit</button>
+        <button type="reset" class="btn btn-default" onclick=" if (validate()) addRow();">Submit</button>
     </form>
 
     <div class="container">
-        <table class="table">
+        <table id = 'table' class="table">
             <thead>
             <tr>
                 <th>Name</th>
