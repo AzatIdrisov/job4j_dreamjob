@@ -7,6 +7,34 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        function validate() {
+            let result = true;
+            let fields = [];
+            if($('#name').val() == '') {
+                fields.push('Name');
+                result = false
+            }
+            if($('#surname').val() == '') {
+                fields.push('Surname');
+                result = false
+            }
+            if($('#desc').val() == '') {
+                fields.push('Description');
+                result = false
+            }
+            if (fields.length > 1) {
+                let msg = fields[0];
+                for (let i = 1; i < fields.length; ++i) {
+                    msg += ', ' + fields[i];
+                }
+                msg += ' fields is empty';
+                alert(msg);
+            }
+            return result;
+        }
+    </script>
+
 </head>
 <body>
 
@@ -33,7 +61,7 @@
             <label for="desc">Description</label>
             <textarea id="desc" name="desc" rows="4" cols="50"></textarea>
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default" onclick="return validate();">Submit</button>
     </form>
 
     <div class="container">
