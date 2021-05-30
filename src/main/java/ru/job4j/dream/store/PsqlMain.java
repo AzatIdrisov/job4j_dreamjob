@@ -13,11 +13,11 @@ public class PsqlMain {
         store.savePost(new Post(1, "Java Middle Job"));
         Post foundedPost = store.findPostById(1);
         System.out.println(foundedPost.getId() + " " + foundedPost.getName());
-        store.saveCandidate(new Candidate(0, "Java Junior"));
+        store.saveCandidate(new Candidate(0, "Java Junior", 0));
         for (Candidate candidate : store.findAllCandidates()) {
             System.out.println(candidate.getId() + " " + candidate.getName());
         }
-        store.saveCandidate(new Candidate(1, "Java Middle Dev"));
+        store.saveCandidate(new Candidate(1, "Java Middle Dev", 0));
         Candidate foundedCandidate = store.findCandidateById(1);
         System.out.println(foundedCandidate.getId() + " " + foundedCandidate.getName());
     }

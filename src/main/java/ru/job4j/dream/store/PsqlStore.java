@@ -78,7 +78,7 @@ public class PsqlStore implements Store {
         ) {
             try (ResultSet it = ps.executeQuery()) {
                 while (it.next()) {
-                    candidates.add(new Candidate(it.getInt("id"), it.getString("name")));
+                    candidates.add(new Candidate(it.getInt("id"), it.getString("name"), it.getInt("city_id")));
                 }
             }
         } catch (Exception e) {
@@ -154,9 +154,10 @@ public class PsqlStore implements Store {
 
     private Candidate createCandidate(Candidate candidate) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("INSERT INTO candidate(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+             PreparedStatement ps =  cn.prepareStatement("INSERT INTO candidate(name, city_id) VALUES (?,?)", PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             ps.setString(1, candidate.getName());
+            ps.setInt(2, candidate.getCityId());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
@@ -171,10 +172,11 @@ public class PsqlStore implements Store {
 
     private void updateCandidate(Candidate candidate) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("update candidate set name = ? where id = ?")
+             PreparedStatement ps =  cn.prepareStatement("update candidate set name = ?, city_id = ? where id = ?")
         ) {
             ps.setString(1, candidate.getName());
-            ps.setInt(2, candidate.getId());
+            ps.setInt(2, candidate.getCityId());
+            ps.setInt(3, candidate.getId());
             ps.executeUpdate();
         } catch (Exception e) {
             LOG.error("Exception when updating candidate", e);
@@ -190,7 +192,7 @@ public class PsqlStore implements Store {
             ps.setInt(1, id);
             try (ResultSet it = ps.executeQuery()) {
                 if (it.next()) {
-                    foundCandidate = new Candidate(it.getInt("id"), it.getString("name"));
+                    foundCandidate = new Candidate(it.getInt("id"), it.getString("name"), it.getInt("city_id"));
                 }
             }
         } catch (Exception e) {

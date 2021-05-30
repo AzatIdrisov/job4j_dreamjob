@@ -5,7 +5,8 @@ CREATE TABLE post (
 
 CREATE TABLE candidate (
    id SERIAL PRIMARY KEY,
-   name TEXT
+   name TEXT,
+   cityId int
 );
 
 CREATE TABLE "user"(

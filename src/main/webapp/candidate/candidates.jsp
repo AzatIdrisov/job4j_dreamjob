@@ -5,6 +5,7 @@
 <%@ page import="ru.job4j.dream.store.PsqlStore" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.HashMap" %>
+<%@ page import="ru.job4j.dream.store.MemCityStore" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!doctype html>
 <html lang="en">
@@ -63,7 +64,9 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th scope="col">Названия</th>
+                        <th scope="col">Имя</th>
+                        <th scope="col">Фото</th>
+                        <th scope="col">Город</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -87,6 +90,9 @@
                                 <% } else { %>
                                         <img src="<%=request.getContextPath()%>/download?name=<%=images.get(String.valueOf(candidate.getId()))%>" width="100px" height="100px"/>
                                 <% } %>
+                            </td>
+                            <td>
+                                <%=MemCityStore.instOf().getNameById(candidate.getCityId())%>
                             </td>
                             <td>
                                 <div class="card-body">
