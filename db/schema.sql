@@ -15,3 +15,8 @@ CREATE TABLE "user"(
     email TEXT,
     password TEXT
 );
+
+CREATE TABLE city (
+    id SERIAL PRIMARY KEY,
+    name text
+);

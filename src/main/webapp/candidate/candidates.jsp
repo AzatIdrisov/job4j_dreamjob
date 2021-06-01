@@ -6,6 +6,7 @@
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="ru.job4j.dream.store.MemCityStore" %>
+<%@ page import="ru.job4j.dream.store.PsqlCityStore" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!doctype html>
 <html lang="en">
@@ -92,7 +93,7 @@
                                 <% } %>
                             </td>
                             <td>
-                                <%=MemCityStore.instOf().getNameById(candidate.getCityId())%>
+                                <%=PsqlCityStore.instOf().getNameById(candidate.getCityId())%>
                             </td>
                             <td>
                                 <div class="card-body">

@@ -3,6 +3,7 @@ package ru.job4j.dream.servlet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import ru.job4j.dream.store.MemCityStore;
+import ru.job4j.dream.store.PsqlCityStore;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ public class CityServlet extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
-        for (String city : MemCityStore.instOf().getAll()) {
+        for (String city : PsqlCityStore.instOf().getAll()) {
             JSONObject cityJSON = new JSONObject();
             cityJSON.put("city", city);
             arr.add(cityJSON);
